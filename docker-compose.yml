@@ -1,0 +1,10 @@
+version: '3.9'
+services:
+  app:
+    name: polly_bot
+    image: polly_bot
+    env_file:
+      - .env
+    volumes:
+      - $HOME/.aws/credentials:/app/.aws/credentials
+      - $HOME/polly_output:/app/polly_output
