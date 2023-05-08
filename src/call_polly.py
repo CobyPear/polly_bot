@@ -11,12 +11,18 @@ def call_polly(message, filename, polly):
 
     Keyword arguments:
     message -- message to send to AWS polly
-    filename -- what to name the file
+    filename -- name of the file
     polly -- an initialized AWS polly client
 
 
     returns os.PathLike
     '''
+    filepath = os.path.join("./polly_output", f'{filename}.mp3')
+    if os.path.exists(filepath):
+        print('Found message, returning filepath')
+        return filepath
+    else:
+        print('Sending message to Polly')
 
     try:
         # Request speech synthesis
@@ -34,11 +40,10 @@ def call_polly(message, filename, polly):
         # ensure the close method of the stream object will be called automatically
         # at the end of the with statement's scope.
         with closing(response["AudioStream"]) as stream:
-            output_path = os.path.join("./polly_output", f'{filename}.mp3')
 
             try:
                 # Open a file for writing the output as a binary stream
-                with open(output_path, "wb") as file:
+                with open(filepath, "wb") as file:
                     file.write(stream.read())
             except IOError as error:
                 # Could not write to file, exit gracefully
@@ -50,4 +55,4 @@ def call_polly(message, filename, polly):
         print("Could not stream audio")
         sys.exit(-1)
 
-    return output_path
+    return filepath

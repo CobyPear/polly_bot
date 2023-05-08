@@ -17,7 +17,7 @@ load_dotenv()
 discord_token = os.environ.get('DISCORD_TOKEN')
 intents = discord.Intents.default()
 intents.message_content = True
-bot = commands.Bot(command_prefix='/', intents=intents)
+bot = commands.Bot(command_prefix='!', intents=intents)
 
 
 # @bot.command()
@@ -30,10 +30,11 @@ async def speak(ctx):
     print('MESSAGE RECEIVED:')
     message = ctx.message.content
     print(message)
-    # hash the message for the filename (should probably truncate this)
-    message_hash = hashlib.sha1(message.encode("UTF-8")).hexdigest()
-    parsed_message = re.sub(r'^\/speak', '', message)
-    mp3_path = call_polly(parsed_message, message_hash, polly)
+    parsed_message = re.sub(r'^!speak', '', message)
+    # discord truncates filename to 39 chars
+    # use hash of message for filename
+    filename = hashlib.sha256(parsed_message.encode('utf-8')).hexdigest()[0:39]
+    mp3_path = call_polly(parsed_message, filename, polly)
     attachment = discord.File(mp3_path, spoiler=False)
     await ctx.reply(file=attachment)
 
