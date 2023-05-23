@@ -1,11 +1,11 @@
-"""Getting Started Example for Python 2.7+/3.3+"""
-import os
 import sys
 from contextlib import closing
+from file_helpers import write_to_tmp_file
+import boto3
 from botocore.exceptions import BotoCoreError, ClientError
 
 
-def call_polly(message, filename, polly):
+def call_polly(message, filename, polly, bucket_name):
     '''Call AWS Polly with the message.
     Returns the path of the mp3 file created if audio streaming was successful.
 
@@ -13,17 +13,25 @@ def call_polly(message, filename, polly):
     message -- message to send to AWS polly
     filename -- name of the file
     polly -- an initialized AWS polly client
+    bucket_name -- the name of the s3 bucket to store the mp3 files
 
 
     returns os.PathLike
     '''
-    filepath = os.path.join("./polly_output", f'{filename}.mp3')
-    if os.path.exists(filepath):
-        print('Found message, returning filepath')
-        return filepath
-    else:
-        print('Sending message to Polly')
+    client = boto3.client('s3')
+    key = f'{filename}.mp3'
+    try:
+        req = client.get_object(
+            Bucket=bucket_name, ResponseCacheControl=f'max-age={60 * 60 * 24 * 7}', Key=key)
+        mp3 = req['Body'].read()
+        if mp3:
+            print('Found message, returning filepath')
+            return write_to_tmp_file(filename, mp3)
+    except ClientError as error:
+        print(error)
+        print('Could not find mp3 in bucket')
 
+    print('Sending message to Polly')
     try:
         # Request speech synthesis
         response = polly.synthesize_speech(Text=message, OutputFormat="mp3",
@@ -40,11 +48,15 @@ def call_polly(message, filename, polly):
         # ensure the close method of the stream object will be called automatically
         # at the end of the with statement's scope.
         with closing(response["AudioStream"]) as stream:
+            mp3 = stream.read()
 
             try:
                 # Open a file for writing the output as a binary stream
-                with open(filepath, "wb") as file:
-                    file.write(stream.read())
+                client.put_object(
+                    Bucket=bucket_name,
+                    Key=key,
+                    Body=mp3)
+                return write_to_tmp_file(filename, mp3)
             except IOError as error:
                 # Could not write to file, exit gracefully
                 print(error)
@@ -54,5 +66,3 @@ def call_polly(message, filename, polly):
         # The response didn't contain audio data, exit gracefully
         print("Could not stream audio")
         sys.exit(-1)
-
-    return filepath

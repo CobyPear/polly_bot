@@ -1,5 +1,4 @@
 import os
-import sys
 import re
 import hashlib
 from boto3 import Session
@@ -12,6 +11,7 @@ from call_polly import call_polly
 # section of the AWS credentials file (~/.aws/credentials).
 session = Session(region_name="us-east-2")
 polly = session.client("polly")
+bucket_name = os.environ.get('S3_BUCKET')
 
 load_dotenv()
 discord_token = os.environ.get('DISCORD_TOKEN')
@@ -34,8 +34,10 @@ async def speak(ctx):
     # discord truncates filename to 39 chars
     # use hash of message for filename
     filename = hashlib.sha256(parsed_message.encode('utf-8')).hexdigest()[0:39]
-    mp3_path = call_polly(parsed_message, filename, polly)
+    mp3_path = call_polly(parsed_message, filename, polly, bucket_name)
     attachment = discord.File(mp3_path, spoiler=False)
     await ctx.reply(file=attachment)
+    # remove the temp file
+    os.remove(mp3_path)
 
 bot.run(discord_token)
