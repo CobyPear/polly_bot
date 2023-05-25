@@ -21,15 +21,9 @@ resource "aws_key_pair" "deployer" {
 
 # an ec2 instance to deploy the discord bot to
 resource "aws_instance" "app_server" {
-  instance_type = "t2.micro"
+  instance_type = "t3.nano"
   # ubuntu server
   ami = "ami-053b0d53c279acc90"
-  ebs_block_device {
-    device_name = "ec2-storage"
-    volume_size = 1
-    throughput = 125
-  }
-
   key_name = aws_key_pair.deployer.key_name
   tags = {
     Name = "PollyBot"
@@ -43,6 +37,9 @@ resource "aws_s3_bucket" "polly_bucket" {
 
   tags = {
     Name = "PollyBot"
+  }
+  lifecycle {
+    prevent_destroy = true
   }
 }
 
