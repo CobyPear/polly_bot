@@ -1,7 +1,6 @@
 version: '3.9'
 services:
-  app:
-    name: polly_bot
+  polly_bot:
     image: polly_bot
     env_file:
       - .env
