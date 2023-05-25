@@ -7,13 +7,14 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from call_polly import call_polly
 
+load_dotenv()
 # Create a client using the credentials and region defined in the default user
 # section of the AWS credentials file (~/.aws/credentials).
-session = Session(region_name="us-east-2")
-polly = session.client("polly")
+region = os.environ.get('REGION')
+session = Session(region_name=region)
+polly = session.client('polly')
 bucket_name = os.environ.get('S3_BUCKET')
 
-load_dotenv()
 discord_token = os.environ.get('DISCORD_TOKEN')
 intents = discord.Intents.default()
 intents.message_content = True
