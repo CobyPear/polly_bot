@@ -8,6 +8,7 @@ variable "public_key" {
   description = "path to AWS keypair public key"
   type        = string
   default     = "~/.ssh/aws_keypair.pub"
+  sensitive   = true
 }
 
 variable "bucket_name" {
@@ -27,14 +28,17 @@ variable "polly_bot_version" {
 variable "DISCORD_TOKEN" {
   description = "Your discord bot token"
   type        = string
+  sensitive   = true
 }
 
 variable "DISCORD_CLIENT_ID" {
   description = "Your discord client id"
   type        = string
+  sensitive   = true
 }
 
 variable "DISCORD_SECRET" {
   description = "Your discord secret"
   type        = string
+  sensitive   = true
 }

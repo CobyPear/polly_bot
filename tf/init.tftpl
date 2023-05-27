@@ -8,18 +8,24 @@ check_pip3() {
 
 get_code() {
     VERSION=${polly_bot_version}
-    # Create a directory to store the tarball and extracted files
-    mkdir polly_bot
-    # Download the tarball from the given link
-    curl -L https://github.com/CobyPear/polly_bot/archive/refs/tags/$VERSION.tar.gz -o polly_bot/$VERSION.tar.gz
-    # Extract the contents of the tarball into the polly_bot directory
-    tar -xzf polly_bot/$VERSION.tar.gz -C polly_bot --strip-components=1
+    if [ ! -f $HOME/polly_bot/src/bot.py ]; then
+        # Create a directory to store the tarball and extracted files
+        mkdir polly_bot
+        # Download the tarball from the given link
+        curl -L https://github.com/CobyPear/polly_bot/archive/refs/tags/$VERSION.tar.gz -o polly_bot/$VERSION.tar.gz
+        # Extract the contents of the tarball into the polly_bot directory
+        tar -xzf polly_bot/$VERSION.tar.gz -C polly_bot --strip-components=1
+    fi
 }
 
 init_systemd() {
-    sudo ln ./polly_bot.service /etc/systemd/system
-    sudo systemctl enable polly_bot.service
-    sudo systemctl start polly_bot.service
+    # Check if the file exists
+    if [ ! -f /etc/systemd/system/polly_bot.service ]; then
+        echo "creating polly_bot.service"
+        sudo ln ./polly_bot.service /etc/systemd/system
+        sudo systemctl enable polly_bot.service
+        sudo systemctl start polly_bot.service
+    fi
 }
 
 if [ sudo systemctl --quiet is-active polly_bot.service ]; then
@@ -35,3 +41,4 @@ else
     pip3 install -r ./requirements.txt
     # enable and start the systemd service
     init_systemd
+fi

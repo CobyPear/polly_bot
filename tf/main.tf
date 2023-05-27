@@ -32,16 +32,22 @@ resource "aws_instance" "app_server" {
   # init script downloads source code and starts the service via systemd
   user_data = templatefile("${path.module}/init.tftpl", {
     polly_bot_version = var.polly_bot_version,
-    region            = var.aws_region,
-    bucket_name       = var.bucket_name,
-    DISCORD_CLIENT_ID = var.DISCORD_CLIENT_ID,
-    DISCORD_SECRET    = var.DISCORD_SECRET,
-    DISCORD_TOKEN     = var.DISCORD_TOKEN
   })
 
   tags = {
     Name = "PollyBot"
   }
+}
+
+# Parameter Storage for discord secrets
+resource "aws_kms_key" "kms_key" {
+  description         = "KMS key 1"
+  enable_key_rotation = true
+  policy              = data.aws_iam_policy_document.assume_role.json
+}
+
+resource "aws_ss" "name" {
+
 }
 
 # IAM roles and policy docs
