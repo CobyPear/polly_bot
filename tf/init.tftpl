@@ -22,14 +22,6 @@ init_systemd() {
     sudo systemctl start polly_bot.service
 }
 
-
-# set env vars
-export REGION=${region}
-export S3_BUCKET=${bucket_name}
-export DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
-export DISCORD_SECRET=${DISCORD_SECRET}
-export DISCORD_TOKEN=${DISCORD_TOKEN}
-
 if [ sudo systemctl --quiet is-active polly_bot.service ]; then
     echo "polly_bot.service already running, skipping..."
 else
