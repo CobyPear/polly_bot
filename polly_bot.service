@@ -3,13 +3,12 @@ Description=Bot Service
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 /home/ubuntu/polly_bot/src/bot.py
-WorkingDirectory=/home/ubuntu/polly_bot/src
-User=ubuntu
-Group=ubuntu
+ExecStart=/usr/bin/python3 /home/ec2-user/polly_bot/src/bot.py
+WorkingDirectory=/home/ec2-user/polly_bot/src
+User=ec2-user
+Group=ec2-user
 Restart=always
 Environment=PYTHONUNBUFFERED=1
 
 [Install]
 WantedBy=multi-user.target
-

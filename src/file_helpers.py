@@ -13,5 +13,6 @@ def write_to_tmp_file(filename, stream):
             file.write(stream)
             print(f'Wrote file to {filepath}')
         return filepath
-    except FileExistsError() as error:
+    except FileExistsError as error:
         print(error)
+        return filepath
