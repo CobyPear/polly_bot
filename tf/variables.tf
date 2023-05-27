@@ -15,17 +15,11 @@ variable "bucket_name" {
   type        = string
 }
 
-variable "iam_instance_profile" {
-  description = "IAM instance profile to use with the ec2 instance. Must have permissions for s3, and polly."
-  type        = string
-  default     = "PollyBotEC2"
-}
-
 variable "polly_bot_version" {
   description = "Version of polly_bot to use"
   type        = string
   # see https://github.com/CobyPear/polly_bot/releases for releases
-  default = "pre-release.2"
+  default = "pre-release.3"
 }
 
 # for the following values, you will need to set up an app on Discord

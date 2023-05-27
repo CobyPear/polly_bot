@@ -26,9 +26,13 @@ resource "aws_instance" "app_server" {
   ami                  = "ami-0715c1897453cabd1"
   key_name             = aws_key_pair.deployer.key_name
   iam_instance_profile = aws_iam_instance_profile.polly_bot_instance_profile.name
+  root_block_device {
+    delete_on_termination = true
+  }
   # init script downloads source code and starts the service via systemd
   user_data = templatefile("${path.module}/init.tftpl", {
     polly_bot_version = var.polly_bot_version,
+    region            = var.aws_region,
     bucket_name       = var.bucket_name,
     DISCORD_CLIENT_ID = var.DISCORD_CLIENT_ID,
     DISCORD_SECRET    = var.DISCORD_SECRET,

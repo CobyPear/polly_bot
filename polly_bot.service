@@ -8,6 +8,7 @@ WorkingDirectory=/home/ec2-user/polly_bot/src
 User=ec2-user
 Group=ec2-user
 Restart=always
+RestartSec=15
 Environment=PYTHONUNBUFFERED=1
 
 [Install]
