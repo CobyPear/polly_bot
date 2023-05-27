@@ -20,3 +20,27 @@ variable "iam_instance_profile" {
   type        = string
   default     = "PollyBotEC2"
 }
+
+variable "polly_bot_version" {
+  description = "Version of polly_bot to use"
+  type        = string
+  # see https://github.com/CobyPear/polly_bot/releases for releases
+  default = "pre-release.2"
+}
+
+# for the following values, you will need to set up an app on Discord
+# see https://discord.com/developers/docs/getting-started#step-1-creating-an-app for more info
+variable "DISCORD_TOKEN" {
+  description = "Your discord bot token"
+  type        = string
+}
+
+variable "DISCORD_CLIENT_ID" {
+  description = "Your discord client id"
+  type        = string
+}
+
+variable "DISCORD_SECRET" {
+  description = "Your discord secret"
+  type        = string
+}
