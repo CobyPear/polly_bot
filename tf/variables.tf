@@ -31,14 +31,15 @@ variable "DISCORD_TOKEN" {
   sensitive   = true
 }
 
-variable "DISCORD_CLIENT_ID" {
-  description = "Your discord client id"
-  type        = string
-  sensitive   = true
-}
+# Only the token is needed at the moment
+# variable "DISCORD_CLIENT_ID" {
+#   description = "Your discord client id"
+#   type        = string
+#   sensitive   = true
+# }
 
-variable "DISCORD_SECRET" {
-  description = "Your discord secret"
-  type        = string
-  sensitive   = true
-}
+# variable "DISCORD_SECRET" {
+#   description = "Your discord secret"
+#   type        = string
+#   sensitive   = true
+# }

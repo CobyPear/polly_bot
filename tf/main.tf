@@ -65,26 +65,13 @@ resource "aws_kms_key_policy" "key_policy" {
   })
 }
 
-resource "aws_ssm_parameter" "DISCORD_CLIENT_ID" {
-  name   = "DISCORD_CLIENT_ID"
-  value  = var.DISCORD_CLIENT_ID
-  type   = "SecureString"
-  key_id = aws_kms_key.kms_key.id
-}
-
-resource "aws_ssm_parameter" "DISCORD_SECRET" {
-  name   = "DISCORD_SECRET"
-  value  = var.DISCORD_SECRET
-  type   = "SecureString"
-  key_id = aws_kms_key.kms_key.id
-}
-
 resource "aws_ssm_parameter" "DISCORD_TOKEN" {
   name   = "DISCORD_TOKEN"
   value  = var.DISCORD_TOKEN
   type   = "SecureString"
   key_id = aws_kms_key.kms_key.id
 }
+
 # IAM roles and policy docs
 
 # IAM role for the instance profile
