@@ -44,7 +44,25 @@ resource "aws_instance" "app_server" {
 # Parameter Storage for discord secrets
 resource "aws_kms_key" "kms_key" {
   description = "KMS key 1"
-  policy      = data.aws_iam_policy_document.assume_role.json
+}
+
+resource "aws_kms_key_policy" "key_policy" {
+  key_id = aws_kms_key.kms_key.id
+  policy = jsonencode({
+    Id = "kms_key"
+    Statement = [
+      {
+        Action = "kms:*"
+        Effect = "Allow"
+        Principal = {
+          AWS = "*"
+        }
+
+        Resource = "*"
+      }
+    ]
+    Version = "2012-10-17"
+  })
 }
 
 resource "aws_ssm_parameter" "DISCORD_CLIENT_ID" {
@@ -127,19 +145,8 @@ data "aws_iam_policy_document" "policy_doc" {
     actions   = ["polly:*"]
     resources = ["*"]
   }
-
-  statement {
-    actions = [
-      "kms:Encrypt",
-      "kms:Decrypt",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:DescribeKey"
-    ]
-    resources = ["*"]
-  }
-
 }
+
 
 # bucket to store the mp3s from polly bot
 resource "aws_s3_bucket" "polly_bucket" {

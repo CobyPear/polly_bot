@@ -15,16 +15,23 @@ session = Session(region_name=region)
 polly = session.client('polly')
 bucket_name = os.environ.get('S3_BUCKET')
 
-discord_token = os.environ.get('DISCORD_TOKEN')
+# get the token from aws parameter storage if
+# it does not exist locally
+if os.environ.get('DISCORD_TOKEN') is None:
+    response = session.client('ssm').get_parameter(
+        Name='DISCORD_TOKEN', WithDecryption=True)
+    discord_token = response['Parameter']['Value']
+else:
+    discord_token = os.environ.get('DISCORD_TOKEN')
+
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-
+# example bot command
 # @bot.command()
 # async def ping(ctx):
 #     await ctx.send('pong')
-
 
 @bot.command()
 async def speak(ctx):

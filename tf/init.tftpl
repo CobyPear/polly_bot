@@ -22,6 +22,7 @@ init_systemd() {
     # Check if the file exists
     if [ ! -f /etc/systemd/system/polly_bot.service ]; then
         # write the service file
+        touch $HOME/polly_bot/polly_bot.service
         cat <<EOF > $HOME/polly_bot/polly_bot.service
 [Unit]
 Description=Bot Service
