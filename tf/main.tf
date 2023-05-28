@@ -48,21 +48,8 @@ resource "aws_kms_key" "kms_key" {
 
 resource "aws_kms_key_policy" "key_policy" {
   key_id = aws_kms_key.kms_key.id
-  policy = jsonencode({
-    Id = "kms_key"
-    Statement = [
-      {
-        Action = "kms:*"
-        Effect = "Allow"
-        Principal = {
-          AWS = "*"
-        }
+  policy = data.aws_iam_policy_document.key_policy.json
 
-        Resource = "*"
-      }
-    ]
-    Version = "2012-10-17"
-  })
 }
 
 resource "aws_ssm_parameter" "DISCORD_TOKEN" {
@@ -133,6 +120,20 @@ data "aws_iam_policy_document" "policy_doc" {
     resources = ["*"]
   }
 }
+
+data "aws_iam_policy_document" "key_policy" {
+  statement {
+    sid    = "kms_key for poll_bot ssm"
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    actions   = ["kms:*"]
+    resources = ["*"]
+  }
+}
+
 
 
 # bucket to store the mp3s from polly bot
