@@ -32,6 +32,8 @@ resource "aws_instance" "app_server" {
   # init script downloads source code and starts the service via systemd
   user_data = templatefile("${path.module}/init.tftpl", {
     polly_bot_version = var.polly_bot_version,
+    region            = var.aws_region,
+    bucket_name       = var.bucket_name
   })
 
   tags = {
@@ -41,15 +43,30 @@ resource "aws_instance" "app_server" {
 
 # Parameter Storage for discord secrets
 resource "aws_kms_key" "kms_key" {
-  description         = "KMS key 1"
-  enable_key_rotation = true
-  policy              = data.aws_iam_policy_document.assume_role.json
+  description = "KMS key 1"
+  policy      = data.aws_iam_policy_document.assume_role.json
 }
 
-resource "aws_ss" "name" {
-
+resource "aws_ssm_parameter" "DISCORD_CLIENT_ID" {
+  name   = "DISCORD_CLIENT_ID"
+  value  = var.DISCORD_CLIENT_ID
+  type   = "SecureString"
+  key_id = aws_kms_key.kms_key.id
 }
 
+resource "aws_ssm_parameter" "DISCORD_SECRET" {
+  name   = "DISCORD_SECRET"
+  value  = var.DISCORD_SECRET
+  type   = "SecureString"
+  key_id = aws_kms_key.kms_key.id
+}
+
+resource "aws_ssm_parameter" "DISCORD_TOKEN" {
+  name   = "DISCORD_TOKEN"
+  value  = var.DISCORD_TOKEN
+  type   = "SecureString"
+  key_id = aws_kms_key.kms_key.id
+}
 # IAM roles and policy docs
 
 # IAM role for the instance profile
@@ -103,12 +120,23 @@ data "aws_iam_policy_document" "policy_doc" {
       "s3:*",
       "s3-object-lambda:*"
     ]
-    resources = ["*", ]
+    resources = ["*"]
   }
   # polly access
   statement {
     actions   = ["polly:*"]
-    resources = ["*", ]
+    resources = ["*"]
+  }
+
+  statement {
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey"
+    ]
+    resources = ["*"]
   }
 
 }

@@ -21,6 +21,27 @@ get_code() {
 init_systemd() {
     # Check if the file exists
     if [ ! -f /etc/systemd/system/polly_bot.service ]; then
+        # write the service file
+        cat <<EOF > $HOME/polly_bot/polly_bot.service
+[Unit]
+Description=Bot Service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/ec2-user/polly_bot/src/bot.py
+WorkingDirectory=/home/ec2-user/polly_bot/src
+User=ec2-user
+Group=ec2-user
+Restart=always
+RestartSec=15
+Environment="PYTHONUNBUFFERED=1"
+Environment="REGION=${region}"
+Environment="S3_BUCKET=${bucket_name}"
+
+[Install]
+WantedBy=multi-user.target
+
+EOF
         echo "creating polly_bot.service"
         sudo ln ./polly_bot.service /etc/systemd/system
         sudo systemctl enable polly_bot.service
